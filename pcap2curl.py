@@ -7,6 +7,8 @@ from scapy.all import PcapReader, re, Raw, TCP
 def payload2curl(p):
     lines = re.compile("[\n\r]+").split(p.decode())
     start_line = re.search("^([A-Z]+) ([^ ]+) (HTTP\/[0-9\/]+)", lines[0])
+    if start_line is None:
+        return 0
     method = start_line.group(1)
     url = start_line.group(2)
     version = start_line.group(3)  # Never used
