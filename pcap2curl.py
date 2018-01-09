@@ -16,8 +16,9 @@ def payload2curl(p):
     del lines[0]
     headers = []
     for line in lines:
+        line = line.replace('\\', '\\\\').replace('"', '\\"').replace('$', '\\$')
         if ":" in line:
-            headers.append("-H '{}'".format(line))
+            headers.append("-H \"{}\"".format(line))
         if "Host:" in line:
             host_header = re.search("^Host: (.*)", line)
             host_name = host_header.group(1)
@@ -25,7 +26,8 @@ def payload2curl(p):
     proto_host = 'http://{}/'.format(host_name)
     if not url.startswith(proto_host):
         url = "{}{}".format(proto_host, url[1:] if url[0] == "/" else url)
-    curl = "curl '{}' \\\n -X {} \\\n ".format(url, method)
+    url = url.replace('\\', '\\\\').replace('"', '\\"').replace('$', '\\$')
+    curl = "curl \"{}\" \\\n -X {} \\\n ".format(url, method)
     curl += " \\\n ".join(headers)
     return curl
 
